@@ -1,0 +1,152 @@
+---
+# Preamble
+
+## Author
+author:
+  name: Галацан Николай Ильич
+  email: 1032225763@pfur.ru
+  affiliation:
+    - name: Российский университет дружбы народов
+      country: Российская Федерация
+      postal-code: 117198
+      city: Москва
+      address: ул. Миклухо-Маклая, д. 6
+## Title
+title: "Лабораторная работа №"
+subtitle: "Шаблон"
+## Generic options
+lang: ru-RU
+number-sections: true
+toc: true
+toc-title: "Содержание"
+toc-depth: 2
+## Crossref customization
+crossref:
+  lof-title: "Список иллюстраций"
+  lot-title: "Список таблиц"
+  lol-title: "Листинги"
+  fig-prefix: "рис."
+  tbl-prefix: "табл."
+  fig-title: "Рис."
+  tbl-title: "Табл."
+## Bibliography
+bibliography:
+  - bib/cite.bib
+csl: _resources/csl/gost-r-7-0-5-2008-numeric.csl
+## Formats
+format:
+### Pdf output format
+  pdf:
+    toc: true
+    number-sections: true
+    colorlinks: false
+    toc-depth: 2
+    lof: true # List of figures
+    lot: false # List of tables
+#### Document
+    documentclass: scrreprt
+    papersize: a4
+    fontsize: 12pt
+    linestretch: 1.5
+#### Language
+    babel-lang: russian
+    babel-otherlangs: english
+#### Biblatex
+    cite-method: biblatex
+    biblio-style: gost-numeric
+    biblatexoptions:
+      - backend=biber
+      - langhook=extras
+      - autolang=other*
+#### Misc options
+    csquotes: true
+    indent: true
+    header-includes: |
+      \usepackage{indentfirst}
+      \usepackage{float}
+      \floatplacement{figure}{H}
+      \usepackage[math,RM={Scale=0.94},SS={Scale=0.94},SScon={Scale=0.94},TT={Scale=MatchLowercase,FakeStretch=0.9},DefaultFeatures={Ligatures=Common}]{plex-otf}
+      \usepackage{fvextra}
+      \fvset{
+        breaklines, 
+        breakanywhere,
+        baselinestretch=0.9,       % межстрочный интервал
+        fontsize=\small            % размер шрифта   
+      }
+### Docx output format
+  docx:
+    toc: true
+    number-sections: true
+    toc-depth: 2
+---
+
+# Цель работы
+
+Исследование неполнодоступной двухсервисной модели Эрланга с резервированием для заявок
+второго типа и разными интенсивностями обслуживания. Анализ модели, численный расчет и анализ основных характеристик системы. Построение графических зависимостей характеристик системы от интенсивности поступающей нагрузки.
+
+# Выполнение
+
+## Описание модели (№1)
+
+Более подробно про Unix см. в [@tanenbaum_book_modern-os_ru; @robbins_book_bash_en; @zarrelli_book_mastering-bash_en; @newham_book_learning-bash_en].
+
+Рассматривается двухсервисная система массового обслуживания с общим числом приборов $C$. Система является **неполнодоступной**: для заявок второго типа выделена зарезервированная группа из $C - g$ приборов. Заявки первого типа могут обслуживаться только на полнодоступной группе из $g$ приборов. Заявки второго типа **первыми** занимают зарезервированные приборы, и только после их заполнения — приборы из полнодоступной группы.
+
+## Схема модели (№2)
+
+Схема представлена на [@fig-1].
+
+![Схема неполнодоступной двухсервисной модели](image/1.png){#fig-1 width=70%}
+
+## Пространство состояний системы (№3) 
+
+Состояние системы описывается парой чисел $(n_1, n_2)$, где:
+
+-   $n_1 = 0, 1, 2, ..., g$ (не может превышать число полнодоступных приборов)
+-   $n_2 = 0, 1, 2, ..., C$ (может занимать все приборы)
+-   Выполняется ограничение на общее число занятых приборов: $n_1 + n_2 \leq C$. 
+
+$$\mathcal{X} = \{(n_1, n_2) \mid n_1 = 0, 1, \ldots, g; \quad n_2 = 0, 1, \ldots, C; \quad n_1 + n_2 \leq C \}$$
+
+---
+
+# Программная реализация (№10)
+
+Код программы написан на языке Python и выполнен в среде разработки Visual Studio Code.
+
+Для реализации примера расчета основных вероятностных характеристик модели были взяты следующие параметры, которые соответствуют системе со средней нагрузкой (оптимальный режим работы):
+$$C = 15, \quad g = 10 \quad \lambda_1 = 8, \quad \lambda_2 = 12, \quad \mu_1 = 2, \quad \mu_2 = 3 $$
+
+
+**Импорт библиотек:**
+```python
+from math import factorial as fct
+import matplotlib.pyplot as plt
+import numpy as np
+```
+
+**Функция расчета стационарного распределения вероятностей:**
+```python
+def calculate_p0(C, g, rho1, rho2):
+    p0_sum = 0
+    for i in range(g + 1):
+        for j in range(C + 1):
+            if i + j <= C:
+                p0_sum += (rho1 ** i / fct(i)) * (rho2 ** j / fct(j))
+    return 1 / p0_sum
+
+# Стационарное распределение вероятностей состояний
+def stationary_distribution(n1, n2, rho1, rho2, p0):
+    return p0 * (rho1 ** n1 / fct(n1)) * (rho2 ** n2 / fct(n2))
+```
+
+# Выводы
+
+Исследована неполнодоступная двухсервисная модель Эрланга с резервированием для заявок
+второго типа и разными интенсивностями обслуживания. Произведен анализ модели, численный расчет и анализ основных характеристик системы. Построены графические зависимости характеристик системы от интенсивности поступающей нагрузки.
+
+# Список литературы{.unnumbered}
+
+::: {#refs}
+:::

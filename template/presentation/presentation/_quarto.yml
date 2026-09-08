@@ -30,6 +30,7 @@ format:
     # logo: _resources/image/logo_rudn.png
     theme: metropolis
     themeoptions: progressbar=frametitle,sectionpage=progressbar,numbering=fraction
+    fonttheme: default
     csquotes: true
     indent: true
     header-includes: |

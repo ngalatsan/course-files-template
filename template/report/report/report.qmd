@@ -4,7 +4,7 @@
 ## Author
 author:
   name: Галацан Николай Ильич
-  email: 1032225763@pfur.ru
+  email: 1032262340@rudn.ru
   affiliation:
     - name: Российский университет дружбы народов
       country: Российская Федерация
